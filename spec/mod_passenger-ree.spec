@@ -34,10 +34,10 @@ This package contains the pluggable Apache server module for Passenger, built ag
 $RPM_BUILD_DIR/%{name}-%{version}/bin/passenger-install-apache2-module -a --apxs2-path=/usr/sbin/apxs
 
 %install
-mkdir -p ${RPM_BUILD_ROOT}/usr/lib/phusion-passenger
 mkdir -p ${RPM_BUILD_ROOT}%{passenger_root}/ext
-cp -a $RPM_BUILD_DIR/%{name}-%{version}/agents ${RPM_BUILD_ROOT}/usr/lib/phusion-passenger
+cp -a $RPM_BUILD_DIR/%{name}-%{version}/agents ${RPM_BUILD_ROOT}%{passenger_root}
 cp -a $RPM_BUILD_DIR/%{name}-%{version}/ext/apache2 ${RPM_BUILD_ROOT}%{passenger_root}/ext
+cp -a $RPM_BUILD_DIR/%{name}-%{version}/ext/ruby ${RPM_BUILD_ROOT}%{passenger_root}/ext
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -51,7 +51,8 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{passenger_ext_apache2}/module_libboost_oxt/*.cpp
 %exclude %{passenger_ext_apache2}/module_libpassenger_common/*.cpp
 %{passenger_ext_apache2}/
-/usr/lib/phusion-passenger/
+%{passenger_root}/agents
+%{passenger_root}/ext/ruby
 %doc DEVELOPERS.TXT
 %doc INSTALL
 %doc LICENSE
@@ -85,7 +86,7 @@ rm -f /etc/httpd/conf.d/passenger.conf
 
 %changelog
 * Sun Jun 12 2012 Rafael Felix Correa <rafael.felix@rf4solucoes.com.br>
-- brought agents/ to the package, under /usr/lib/phusion-passenger
+- brought agents/ to the package, under passenger_root
 - brought ext/apache2 to the package, excluding the source files
 - added a post script to symlink the passenger_root/ext/apache2/mod_passenger.so inside /etc/httpd/modules
 
