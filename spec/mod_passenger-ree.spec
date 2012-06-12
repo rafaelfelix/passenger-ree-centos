@@ -31,18 +31,27 @@ This package contains the pluggable Apache server module for Passenger, built ag
 %setup -c -n %{name}-%{version}
 
 %build
-cd $RPM_BUILD_DIR/%{name}-%{version}
-env APXS2=/usr/sbin/apxs %{ree_prefix}/bin/rake apache2 APACHE2_OUTPUT_DIR=${RPM_BUILD_ROOT}%{passenger_ext_apache2}
+$RPM_BUILD_DIR/%{name}-%{version}/bin/passenger-install-apache2-module -a --apxs2-path=/usr/sbin/apxs
 
 %install
-# no-op
+mkdir -p ${RPM_BUILD_ROOT}/usr/lib/phusion-passenger
+mkdir -p ${RPM_BUILD_ROOT}%{passenger_root}/ext
+cp -a $RPM_BUILD_DIR/%{name}-%{version}/agents ${RPM_BUILD_ROOT}/usr/lib/phusion-passenger
+cp -a $RPM_BUILD_DIR/%{name}-%{version}/ext/apache2 ${RPM_BUILD_ROOT}%{passenger_root}/ext
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%exclude %{passenger_ext_apache2}/*.h
+%exclude %{passenger_ext_apache2}/*.c
+%exclude %{passenger_ext_apache2}/*.cpp
+%exclude %{passenger_ext_apache2}/*.hpp
+%exclude %{passenger_ext_apache2}/module_libboost_oxt/*.cpp
+%exclude %{passenger_ext_apache2}/module_libpassenger_common/*.cpp
 %{passenger_ext_apache2}/
+/usr/lib/phusion-passenger/
 %doc DEVELOPERS.TXT
 %doc INSTALL
 %doc LICENSE
@@ -76,6 +85,7 @@ rm -f /etc/httpd/conf.d/passenger.conf
 
 %changelog
 * Sun Jun 12 2012 Rafael Felix Correa <rafael.felix@rf4solucoes.com.br>
+- brought agents/ to the package, under /usr/lib/phusion-passenger
 - brought ext/apache2 to the package, excluding the source files
 - added a post script to symlink the passenger_root/ext/apache2/mod_passenger.so inside /etc/httpd/modules
 
